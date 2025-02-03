@@ -10,12 +10,17 @@ import {
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { ShortenUrlDto } from '@core/dto/shorten-url.dto';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Controller('url')
 export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Post('shorten')
+  @ApiOperation({ summary: 'Shorten a URL' }) 
+  @ApiBody({ type: ShortenUrlDto }) 
+  @ApiResponse({ status: 201, description: 'URL successfully shortened' })
+  @ApiResponse({ status: 400, description: 'Invalid URL provided' })
   async shortenUrl(@Body() shortenUrlDto: ShortenUrlDto) {
     try {
       const { url } = shortenUrlDto;
@@ -26,6 +31,10 @@ export class UrlController {
   }
 
   @Get(':shortUrl')
+  @ApiOperation({ summary: 'Return the original URL' }) 
+  @ApiParam({ name: 'shortUrl', description: 'The shortened URL identifier' }) 
+  @ApiResponse({ status: 200, description: 'Return the original URL' })
+  @ApiResponse({ status: 404, description: 'Shortened URL not found' })
   async getUrl(@Param('shortUrl') shortUrl: string) {
     try {
       const originalUrl = await this.urlService.getOriginalUrl(shortUrl);
@@ -41,6 +50,8 @@ export class UrlController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all shortened URLs' }) 
+  @ApiResponse({ status: 200, description: 'Returns all shortened URLs' })
   async getAllUrls() {
     try {
       return await this.urlService.getAllUrls();

@@ -19,6 +19,7 @@ export class UrlService {
 
   async shortenUrl(originalUrl: string): Promise<Url> {
     try {
+      console.log('originalUrl',originalUrl)
       const shortUrl = shortid.generate();
 
       const url = new this.urlModel({
